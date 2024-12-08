@@ -30,14 +30,23 @@
 
 ```bash
 $ yarn install
+
+$ make env
 ```
 
 ## Compile and run the project
 
-
 ```bash
+  # docker compose up
+  make up
+
+  # docker compose up -d
+  make run 
+
+  #or
   docker compose up
 ```
+
 ## OR
 
 ```bash
