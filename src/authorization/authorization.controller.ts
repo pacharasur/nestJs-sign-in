@@ -17,7 +17,7 @@ export class AuthorizationController {
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('signin')
-  async signInPin(@Body() user: UserDto): Promise<Tokens> {
+  async signIn(@Body() user: UserDto): Promise<Tokens> {
     this.logger.log('Incoming request signin');
     return this.authService.signIn(user);
   }

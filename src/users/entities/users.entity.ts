@@ -18,6 +18,9 @@ export class usersEntity {
   password: string;
 
   @Column({ type: 'varchar', length: 255 })
+  nickname: string;
+
+  @Column({ type: 'varchar', length: 255 })
   status: string;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'NOW()' })

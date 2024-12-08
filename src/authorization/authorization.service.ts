@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload, Tokens } from './types';
 import { UsersRepository } from 'src/users/users.repository';
-import { UserDto } from 'src/users/dto/user-data.dto';
+import { UserDetailDto, UserDto } from 'src/users/dto/user-data.dto';
 import { ErrorMessage } from 'src/util/error-message';
 import * as bcrypt from 'bcryptjs';
 
@@ -20,54 +20,59 @@ export class AuthorizationService {
 
   async signIn(user: UserDto): Promise<Tokens> {
     try {
-      const data = {
-        username: 'zzz'
-      } as any;
-
-      const tokens = await this.getTokens(data);
-      this.logger.log(`The user ${data.username} has been signin.`);
+      const tokens = await this.getTokens(user);
+      this.logger.log(`The user ${user.username} has been signin.`);
       return tokens;
 
     } catch (err) {
-      this.logger.error('cannot get head-quarter contracts');
-      throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
+      this.logger.error(`Failed to signIn ${err}`);
+      throw err;
     }
   }
 
-  async validateUser(username: string, password: string): Promise<any> {
+  async validateUser(username: string, password: string): Promise<UserDetailDto> {
     try {
-      const result = await this.usersRepository.findByUserName(username);
+      const result = await this.usersRepository.getUserByUserName(username);
       if (!result) {
         this.logger.error(`The user ${username} is not found.`);
         throw new ForbiddenException(ErrorMessage.USER_NOT_FOUND);
       }
 
-      const passMatches = await bcrypt.compare(password, result.password);
-      console.log('passMatches', passMatches);
-      if (!passMatches) {
-        this.logger.error(`The password of user ${username} is not match.`);
-        throw new ForbiddenException(ErrorMessage.INCORRECT_PASSWORD);
-      }
-      return username;
-      //มาจัดการด้วยถ้ามันไม่ math
+      await this.comparePassword(password, result.password);
+      return { username, nickname: result.nickname } as UserDetailDto;
+
     } catch (err) {
-      this.logger.error(err);
-      throw new HttpException(err, HttpStatus.FORBIDDEN);
+      this.logger.error(`Failed to validate user ${err}`);
+      throw err;
     }
   }
 
-  async getTokens(userData: any) {
-    const jwtPayload: JwtPayload = {
-      username: 'zzz'
-    };
+  async comparePassword(password, hash): Promise<boolean> {
+    const passMatches = await bcrypt.compare(password, hash);
+    if (!passMatches) {
+      this.logger.error(`The password of user is not match.`);
+      throw new ForbiddenException(ErrorMessage.INCORRECT_PASSWORD);
+    }
+    return passMatches;
+  }
 
-    const accessToken = await this.jwtService.signAsync(jwtPayload, {
-      secret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
-      expiresIn: '1h',
-    })
+  async getTokens(userData: UserDto): Promise<Tokens> {
+    try {
+      const jwtPayload: JwtPayload = {
+        username: userData.username,
+        nickname: userData.nickname
+      };
 
-    return {
-      accessToken: accessToken
-    };
+      const accessToken = await this.jwtService.signAsync(jwtPayload, {
+        secret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
+        expiresIn: '1h',
+      })
+
+      return {
+        accessToken: accessToken
+      };
+    } catch (err) {
+      throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
