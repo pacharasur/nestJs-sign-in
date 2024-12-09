@@ -15,5 +15,7 @@ export interface IUserResponse {
 
 export interface IComparisonResponse {
   comparison: string;
+  pixelsDifference: string;
+  compatibility: string;
   message: string;
 }

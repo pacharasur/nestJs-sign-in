@@ -35,6 +35,24 @@ export class UsersController {
     return await this.usersService.findOneAndUpdate(id, body);
   }
 
+  @Public() //ลบด้วย
+  @Post('encrypt')
+  @HttpCode(HttpStatus.OK)
+  async encrypt(
+    @Body() body: { password: string },
+  ): Promise<any> {
+    return await this.usersService.encrypt(body.password);
+  }
+
+  @Public() //ลบด้วย
+  @Post('decrypt')
+  @HttpCode(HttpStatus.OK)
+  async decrypt(
+    @Body() body: { encryptedData: string, iv: string, authTag: string }
+  ): Promise<any> {
+    return await this.usersService.decrypt(body.encryptedData, body.iv, body.authTag);
+  }
+
 
   @Public() //ลบด้วย
   @Post('compare-images')

@@ -5,6 +5,7 @@ WORKDIR /app
 COPY . .
 
 RUN yarn install
+RUN yarn add --platform=linux --arch=arm64v8 sharp
 
 EXPOSE 3001
 
