@@ -8,7 +8,7 @@ export function appDecamelizeKeys(obj: any) {
   );
 }
 
-export function appcamelizeKeys(obj: any) {
+export function appCamelizeKeys(obj: any) {
   return camelizeKeys(obj, (key, convert) => {
     key = key.replace(/\./g, '_');
 

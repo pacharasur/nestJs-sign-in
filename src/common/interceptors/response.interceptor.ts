@@ -2,13 +2,12 @@ import {
   CallHandler,
   ExecutionContext,
   Injectable,
-  InternalServerErrorException,
   NestInterceptor,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Request } from 'express';
-import { appDecamelizeKeys } from '../utils/common.util';
+import { appCamelizeKeys } from '../utils/common.util';
 
 @Injectable()
 export class AppResponseInterceptor implements NestInterceptor {
@@ -47,15 +46,9 @@ export class AppResponseInterceptor implements NestInterceptor {
     };
   }
 
-  private documentTransformer(data: any): object {
-    return {
-      data: appDecamelizeKeys(data.toObject()),
-    };
-  }
-
   private arrayTransformer(data: any[]): object {
     return {
-      data: appDecamelizeKeys(
+      data: appCamelizeKeys(
         data.map((doc) => (!doc.toObject ? doc : doc.toObject())),
       ),
     };
@@ -69,12 +62,12 @@ export class AppResponseInterceptor implements NestInterceptor {
       accessToken,
     };
 
-    return appDecamelizeKeys(response);
+    return appCamelizeKeys(response);
   }
 
   private defaultTransformer(data: any): object {
     return {
-      data: data || {},
+      data: appCamelizeKeys(data) || {},
     };
   }
 }
