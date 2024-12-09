@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { usersEntity } from './entities/users.entity';
 import { UsersRepository } from './users.repository';
+import { EncryptService } from 'src/encrypt/encrypt.service';
 
 @Module({
   controllers: [UsersController],
@@ -12,7 +13,7 @@ import { UsersRepository } from './users.repository';
       usersEntity,
     ]),
   ],
-  providers: [UsersService, UsersRepository,],
-  exports: [UsersRepository, UsersService],
+  providers: [UsersService, UsersRepository, EncryptService],
+  exports: [UsersRepository, UsersService,],
 })
 export class UsersModule { }

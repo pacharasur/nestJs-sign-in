@@ -1,21 +1,26 @@
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthorizationService } from '../authorization.service';
 import { UserDetailDto } from 'src/users/dto/user-data.dto';
-import { decryptData } from 'src/util/tools';
+import { passwordRegex } from 'src/util/tools';
+import { EncryptService } from 'src/encrypt/encrypt.service';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
-  constructor(private authService: AuthorizationService) {
-    super({passReqToCallback: true});
+  constructor(private authService: AuthorizationService,
+    private readonly encryptService: EncryptService,
+  ) {
+    super({ passReqToCallback: true });
   }
 
-  async validate(req: any,username: string, password: string): Promise<UserDetailDto> {
-    console.log(req.body);
-    // const passwordRegex = /^(?=.*\d)(?=.*[\W_]).{8,}$/;
-    // return passwordRegex.test(password);
-    const user = await this.authService.validateUser(username, password);
+  async validate(req: any, username: string): Promise<UserDetailDto> {
+    const passwordDecrypt = this.encryptService.decryptData(req.body.password, req.body.iv, req.body.authTag);
+    const validPass = passwordRegex(passwordDecrypt);
+    if (!validPass) {
+      throw new BadRequestException('password อย่างน้อย 8 ตัวอักษร มีตัวเลขอย่างน้อย 1 ตัว ตัวอักขระพิเศษอย่างน้อย 1 ตัว')
+    }
+    const user = await this.authService.validateUser(username, passwordDecrypt);
     if (!user) {
       throw new UnauthorizedException();
     }

@@ -39,8 +39,9 @@ export function convertHexToBuffer(buffer: string): Buffer {
   return Buffer.from(buffer, 'hex');
 }
 
-export function encryptData(password: string, privateKey: Buffer, iv: Buffer): IEncrypt {
+export function encryptData(password: string, iv: Buffer): IEncrypt {
   const crypto = require('crypto');
+  const privateKey = getPrivateKeyBuffer();
 
   const cipher = crypto.createCipheriv('AES-256-GCM', privateKey, iv);
   let encrypted = cipher.update(password, 'utf8', 'hex');
@@ -50,13 +51,14 @@ export function encryptData(password: string, privateKey: Buffer, iv: Buffer): I
   return { encryptedData: encrypted, iv: convertBufferToHex(iv), authTag: convertBufferToHex(authTag) } as IEncrypt;
 }
 
-export function decryptData(encryptedData: string, privateKey: Buffer, iv: Buffer, authTag: string): string {
-  const crypto = require('crypto');
+export function getPrivateKeyBuffer(): Buffer {
+  const key = process.env.PRIVATE_KEY;
+  const privateKey = Buffer.from(key, 'hex');
+  return privateKey;
+}
 
-  const decipher = crypto.createDecipheriv('AES-256-GCM', privateKey, iv);
-  decipher.setAuthTag(convertHexToBuffer(authTag));
-  let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
-  decrypted += decipher.final('utf8');
-
-  return decrypted;
+export function passwordRegex(password: string): boolean {
+  const passwordRegex = /^(?=.*\d)(?=.*[\W_]).{8,}$/;
+  const validPass = passwordRegex.test(password);
+  return validPass;
 }

@@ -3,20 +3,20 @@ import { UsersRepository } from './users.repository';
 import * as bcrypt from 'bcryptjs';
 import { UserDetailDto, UserDto } from './dto/user-data.dto';
 import { ErrorMessage } from 'src/util/error-message';
-import { convertBufferToHex, convertHexToBuffer, convertImageToBase64, decryptData, encryptData, populateToUserEntity, populateToUserResponse } from 'src/util/tools';
+import { convertImageToBase64, encryptData, populateToUserEntity, populateToUserResponse } from 'src/util/tools';
 import { IComparisonResponse, IUserResponse } from './interfaces/user.interface';
 import * as sharp from 'sharp';
 import * as pixelmatch from 'pixelmatch';
-import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
 import { IEncrypt } from './interfaces/encrypt.interface';
+import { EncryptService } from 'src/encrypt/encrypt.service';
 
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
   constructor(
     private readonly usersRepository: UsersRepository,
-    private readonly configService: ConfigService,
+    private readonly encryptService: EncryptService,
   ) { }
 
   async createUser(user: UserDto, image: Express.Multer.File): Promise<IUserResponse> {
@@ -91,20 +91,12 @@ export class UsersService {
 
   encrypt(data: string): IEncrypt {
     const iv = this.randomByte(16);
-    const privateKey = this.getPrivateKey();
-    return encryptData(data, privateKey, iv);
+    return encryptData(data, iv);
   }
 
   decrypt(encryptedData: string, iv: string, authTag: string): any {
-    const civ = convertHexToBuffer(iv);
-    const privateKey = this.getPrivateKey();
-    return decryptData(encryptedData, privateKey, civ, authTag);
-  }
-
-  getPrivateKey(): Buffer {
-    const key = this.configService.get<string>('PRIVATE_KEY');
-    const privateKey = Buffer.from(key, 'hex');
-    return privateKey;
+    const civ = iv;
+    return this.encryptService.decryptData(encryptedData, civ, authTag);
   }
 
   randomByte(byte: number) {
