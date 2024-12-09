@@ -67,7 +67,7 @@ export class UsersRepository {
     }
   }
 
-  async update(id: number, user: UserDetailDto): Promise<any> {
+  async update(id: number, user: UserDetailDto): Promise<usersEntity> {
     try {
       // Update
       const result = await this.usersRepository.update(

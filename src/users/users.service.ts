@@ -49,11 +49,12 @@ export class UsersService {
     }
   }
 
-  async findOneAndUpdate(id: number, dataUpdate: UserDetailDto) {
+  async findOneAndUpdate(id: number, dataUpdate: UserDetailDto):  Promise<IUserResponse> {
     try {
       const user = await this.usersRepository.getUserById(id);
       if (!user) throw new NotFoundException(ErrorMessage.USER_NOT_FOUND);
-      await this.usersRepository.update(id, dataUpdate)
+      const userUpdated = await this.usersRepository.update(id, dataUpdate);
+      return populateToUserResponse(userUpdated);
     } catch (err) {
       this.logger.error('cannot update user');
       throw err;

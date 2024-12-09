@@ -1,10 +1,11 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Req, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { IUserResponse } from './interfaces/user.interface';
+import { IComparisonResponse, IUserResponse } from './interfaces/user.interface';
 import { UserDetailDto, UserDto } from './dto/user-data.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ParseFile } from 'src/util/parse-file.pipe';
+import { IEncrypt } from './interfaces/encrypt.interface';
 
 @Controller('users')
 export class UsersController {
@@ -31,7 +32,7 @@ export class UsersController {
   async update(
     @Param('id') id: number,
     @Body() body: UserDetailDto,
-  ): Promise<any> {
+  ): Promise<IUserResponse> {
     return await this.usersService.findOneAndUpdate(id, body);
   }
 
@@ -40,7 +41,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async encrypt(
     @Body() body: { password: string },
-  ): Promise<any> {
+  ): Promise<IEncrypt> {
     return await this.usersService.encrypt(body.password);
   }
 
@@ -49,7 +50,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async decrypt(
     @Body() body: { encryptedData: string, iv: string, authTag: string }
-  ): Promise<any> {
+  ): Promise<string> {
     return await this.usersService.decrypt(body.encryptedData, body.iv, body.authTag);
   }
 
@@ -60,7 +61,7 @@ export class UsersController {
   @UseInterceptors(FilesInterceptor('images', 2))
   async compareImages(
     @UploadedFiles(ParseFile) images: Express.Multer.File[],
-  ) {
+  ): Promise<IComparisonResponse> {
     return await this.usersService.compareImages(
       images,
     );
