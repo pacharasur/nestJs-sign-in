@@ -21,6 +21,9 @@ export class usersEntity {
   nickname: string;
 
   @Column({ type: 'varchar', length: 255 })
+  avatar: string;
+
+  @Column({ type: 'varchar', length: 255 })
   status: string;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'NOW()' })

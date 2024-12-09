@@ -13,8 +13,9 @@ export class UsersController {
   @Public() //ลบด้วย
   @HttpCode(HttpStatus.CREATED)
   @Post('register')
-  async register(@Body() user: UserDto): Promise<IUserResponse> {
-    return await this.usersService.createUser(user);
+  @UseInterceptors(FilesInterceptor('image', 1))
+  async register(@UploadedFiles(ParseFile) image: Express.Multer.File, @Body() user: UserDto): Promise<IUserResponse> {
+    return await this.usersService.createUser(user, image);
   }
 
   @Public() //ลบด้วย
@@ -24,7 +25,7 @@ export class UsersController {
     return await this.usersService.getUserById(id);
   }
 
-  @Public()
+  @Public() //ลบด้วย
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   async update(
@@ -42,7 +43,6 @@ export class UsersController {
   async compareImages(
     @UploadedFiles(ParseFile) images: Express.Multer.File[],
   ) {
-    // this.logger.log('Uploading file...');
     return await this.usersService.compareImages(
       images,
     );

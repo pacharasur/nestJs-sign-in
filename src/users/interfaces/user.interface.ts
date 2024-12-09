@@ -5,10 +5,15 @@ export interface IUser {
 }
 
 export interface IUserResponse {
-  id: number
+  id: number;
   username: string;
   status: string;
-  nickname
+  nickname: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface IComparisonResponse {
+  comparison: string;
+  message: string;
 }

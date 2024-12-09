@@ -5,8 +5,8 @@ import * as bcrypt from 'bcryptjs';
 import { UserDetailDto, UserDto } from './dto/user-data.dto';
 import { status } from 'src/util/enums';
 import { ErrorMessage } from 'src/util/error-message';
-import { populateToUserResponse } from 'src/util/tools';
-import { IUserResponse } from './interfaces/user.interface';
+import { convertImageToBase64, populateToUserEntity, populateToUserResponse } from 'src/util/tools';
+import { IComparisonResponse, IUserResponse } from './interfaces/user.interface';
 
 @Injectable()
 export class UsersService {
@@ -15,22 +15,13 @@ export class UsersService {
     private readonly usersRepository: UsersRepository,
   ) { }
 
-  async createUser(user: UserDto): Promise<IUserResponse> {
+  async createUser(user: UserDto, image: Express.Multer.File): Promise<IUserResponse> {
     try {
       const hashedPassword = await this.hashPassword(user.password);
-
-      const userObj = Object.assign({
-        user_name: user.username,
-        password: hashedPassword,
-        nickname: user.nickname,
-        status: status.ACTIVE,
-        created_at: new Date(),
-        updated_at: new Date(),
-      }) as usersEntity;
-
-      const result = await this.usersRepository.create(userObj);
+      const imageBase64 = convertImageToBase64(image[0].buffer);
+      const userEntity = populateToUserEntity(user, hashedPassword, imageBase64);
+      const result = await this.usersRepository.create(userEntity);
       return populateToUserResponse(result);
-
     } catch (err) {
       this.logger.error(`cannot create user ${err}`);
       throw err;
@@ -62,14 +53,14 @@ export class UsersService {
     }
   }
 
-  async compareImages(images: Express.Multer.File[]): Promise<any> {
+  async compareImages(images: Express.Multer.File[]): Promise<IComparisonResponse> {
     try {
       for (let i = 0; i < images.length; i++) {
         this.logger.log(images[i].originalname);
       }
       return {
-        "comparison": "The images are similar",
-        "message": "Images compared successfully",
+        comparison: "The images are similar",
+        message: "Images compared successfully",
       };
     } catch (err) {
       this.logger.error(err);
