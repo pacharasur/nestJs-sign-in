@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Req, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Req, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { IComparisonResponse, IUserResponse } from './interfaces/user.interface';
 import { UserDetailDto, UserDto } from './dto/user-data.dto';
@@ -65,5 +65,11 @@ export class UsersController {
     return await this.usersService.compareImages(
       images,
     );
+  }
+
+  @Public() //ลบด้วย
+  @Delete(':id')
+  deleteUserById(@Param('id') id: number) {
+    return this.usersService.deleteUserById(id);
   }
 }

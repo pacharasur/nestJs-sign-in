@@ -17,11 +17,6 @@ export class UsersRepository {
     private usersRepository: Repository<usersEntity>,
   ) { }
 
-  /**
-   * @description This function creates a new application
-   * @param data the data to be used in creating the new application
-   * @returns the newly created application
-   */
   async create(data: usersEntity): Promise<usersEntity> {
     try {
       const users = this.usersRepository.create(data);
@@ -32,11 +27,6 @@ export class UsersRepository {
     }
   }
 
-  /**
-   * @description Find a single application by its contract code.
-   * @param username The contract code of the application to find.
-   * @returns The usersEntity entity if it exists, or null if it does not exist.
-   */
   async getUserByUserName(username: string): Promise<usersEntity> {
     try {
       return await this.usersRepository.findOne({
@@ -76,6 +66,7 @@ export class UsersRepository {
           ...(user.username && { user_name: user.username }),
           ...(user.status && { status: user.status }),
           ...(user.nickname && { nickname: user.nickname }),
+          updated_at: new Date(),
         }
       );
       return await this.usersRepository.findOne({
@@ -85,5 +76,9 @@ export class UsersRepository {
       this.logger.error(`Failed to update user ${error}`)
       throw new InternalServerErrorException('Failed to update user');
     }
+  }
+
+  async deleteUserById(id: number): Promise<void> {
+    await this.usersRepository.delete(id);
   }
 }

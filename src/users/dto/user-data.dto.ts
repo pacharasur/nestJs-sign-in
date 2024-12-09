@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsOptional, IsString, Matches } from "class-validator";
 
 export class UserDto {
 
@@ -8,6 +8,9 @@ export class UserDto {
 
   @IsString()
   @IsNotEmpty()
+  @Matches(/^(?=.*\d)(?=.*[\W_]).{8,}$/, {
+    message: 'password อย่างน้อย 8 ตัวอักษร มีตัวเลขอย่างน้อย 1 ตัว ตัวอักขระพิเศษอย่างน้อย 1 ตัว',
+  })
   password: string;
 
   @IsString()

@@ -61,6 +61,11 @@ export class UsersService {
     }
   }
 
+  async deleteUserById(id: number): Promise<void> {
+    this.logger.log(`delete User Id ${id}`);
+    await this.usersRepository.deleteUserById(id);
+  }
+
   async compareImages(images: Express.Multer.File[]): Promise<IComparisonResponse> {
     try {
       const [image1, image2] = images;
