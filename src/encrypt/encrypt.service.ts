@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { convertHexToBuffer, getPrivateKeyBuffer } from '../util/tools';
 import { ErrorMessage } from '../util/error-message';
 
@@ -23,7 +23,7 @@ export class EncryptService {
       return decrypted;
     } catch (err) {
       this.logger.error(err);
-      throw new Error(err);
+      throw new InternalServerErrorException(ErrorMessage.CONTACT_SERIVCE);
     }
   }
 }

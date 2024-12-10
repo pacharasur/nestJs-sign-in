@@ -2,12 +2,15 @@ import { IsEmail, IsNotEmpty, IsOptional, IsString, Matches } from "class-valida
 
 export class UserDto {
 
-  @IsEmail()
+  @IsEmail({}, { message: 'ต้องเป็น email เท่านั้น' })
   @IsNotEmpty()
   username: string;
 
   @IsString()
   @IsNotEmpty()
+  @Matches(/^(?=.*\d)(?=.*[\W_]).{8,}$/, {
+    message: 'password อย่างน้อย 8 ตัวอักษร มีตัวเลขอย่างน้อย 1 ตัว ตัวอักขระพิเศษอย่างน้อย 1 ตัว',
+  })
   password: string;
 
   @IsString()

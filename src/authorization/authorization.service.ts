@@ -1,4 +1,4 @@
-import { ForbiddenException, HttpException, HttpStatus, Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, InternalServerErrorException, Logger, LoggerService } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload, Tokens } from './types';
@@ -34,7 +34,6 @@ export class AuthorizationService {
     try {
       const result = await this.usersRepository.getUserByUserName(username);
       if (!result) {
-        this.logger.error(`The user ${username} is not found.`);
         throw new ForbiddenException(ErrorMessage.USER_NOT_FOUND);
       }
 
@@ -72,7 +71,8 @@ export class AuthorizationService {
         accessToken: accessToken
       };
     } catch (err) {
-      throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
+      this.logger.error(`Failed to get tokens ${err}`);
+      throw new InternalServerErrorException(err);
     }
   }
 }

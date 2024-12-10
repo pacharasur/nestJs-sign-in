@@ -6,18 +6,23 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { appCamelizeKeys } from '../utils/common.util';
+import { ActivityLogsService } from 'src/activity-logs/activity-logs.service';
 
 @Injectable()
 export class AppResponseInterceptor implements NestInterceptor {
+  constructor(
+    private readonly activityLogsService: ActivityLogsService
+  ) { }
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest<Request>();
     console.log(
       `\n[${request.method}] ${request.headers.host}${request.originalUrl}`,
     );
     return next.handle().pipe(
-      map((data) => {
+      map(async (data) => {
+        // await this.activityLogsService.createActivityLog(userId, method, url, 200, timestamp);
         const response: any = this.transformResponseHandler(data?.data || data);
         return response;
       }),

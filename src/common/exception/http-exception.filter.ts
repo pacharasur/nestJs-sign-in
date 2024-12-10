@@ -7,22 +7,24 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { decodeJwtHeaders } from './tools';
+import { ActivityLogsService } from 'src/activity-logs/activity-logs.service';
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
   private logger = new Logger('ExceptionMessage');
-  catch(exception: HttpException, host: ArgumentsHost) {
+  constructor(private readonly activityLogsService: ActivityLogsService) { }
+  async catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
     const message = exception.getResponse()['message'] || exception.message;
     const code = exception.getResponse()['statusCode'] || exception.getResponse()['code'];
-
     const exceptionMessage = this.transformMessageHandler(message);
-
     const decoded = decodeJwtHeaders(request.headers.authorization);
 
+    const username = decoded ? decoded.username : 'unknown user';
+    await this.activityLogsService.createActivityLog(username, request.method, request.url, code, status, exceptionMessage);
     if (decoded) {
       this.logger.error(
         `An error occured on user ${decoded.username} when call ${request.url} - ${exceptionMessage}`,

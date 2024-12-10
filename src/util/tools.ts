@@ -3,6 +3,8 @@ import { usersEntity } from "src/users/entities/users.entity";
 import { IUserResponse } from "src/users/interfaces/user.interface";
 import { status } from "./enums";
 import { IEncrypt } from "src/users/interfaces/encrypt.interface";
+import { activityLogsEntity } from "src/activity-logs/entities/activity-logs.entity";
+import { IActivityResponse } from "src/activity-logs/interfaces/user.interface";
 
 export function populateToUserResponse(user: usersEntity): IUserResponse {
   return {
@@ -25,6 +27,30 @@ export function populateToUserEntity(user: UserDto, hashedPassword: string, imag
     created_at: new Date(),
     updated_at: new Date(),
   }) as usersEntity;
+}
+
+export function populateToActivityEntity(username: string, method: string, url: string, code: string, status: number, description: string): activityLogsEntity {
+  return Object.assign({
+    user_name: username,
+    method: method,
+    url: url,
+    code: code,
+    status: status,
+    description: description,
+    created_at: new Date(),
+  }) as activityLogsEntity;
+}
+
+export function populateToActivityResponse(activity: activityLogsEntity): IActivityResponse {
+  return {
+    username: activity.user_name,
+    method: activity.method,
+    url: activity.url,
+    code: activity.code,
+    status: activity.status,
+    description: activity.description,
+    createdAt: new Date(),
+  } as IActivityResponse;
 }
 
 export function convertImageToBase64(imageBuffer: Buffer): string {

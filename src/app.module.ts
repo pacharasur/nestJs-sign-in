@@ -11,11 +11,12 @@ import { AccessTokenGuard } from './authorization/guards/access-token.guard';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { HttpExceptionFilter } from './common/exception/http-exception.filter';
 import { AppResponseInterceptor } from './common/interceptors/response.interceptor';
+import { ActivityLogsModule } from './activity-logs/activity-logs.module';
 
 @Module({
   imports: [UsersModule, TypeOrmModule.forRoot(dataSourceOptions),
     ConfigModule.forRoot({ isGlobal: true }),
-    AuthorizationModule,],
+    AuthorizationModule, ActivityLogsModule],
   controllers: [AppController],
   providers: [
     AppService,

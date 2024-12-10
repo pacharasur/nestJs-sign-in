@@ -10,7 +10,7 @@ export class AuthorizationController {
   constructor(
     @Inject(Logger)
     private readonly logger: LoggerService,
-    private authService: AuthorizationService,
+    private readonly authService: AuthorizationService,
   ) {}
 
   @Public()

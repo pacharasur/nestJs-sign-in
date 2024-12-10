@@ -3,33 +3,32 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  UpdateDateColumn,
 } from 'typeorm';
 
-@Entity({ name: 'users' })
-export class usersEntity {
+@Entity({ name: 'activity_logs' })
+export class activityLogsEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
   @Column({ type: 'varchar', length: 50 })
   user_name: string;
 
+  @Column({ type: 'varchar', length: 10 })
+  method: string;
+
   @Column({ type: 'varchar', length: 255 })
-  password: string;
+  url: string;
 
   @Column({ type: 'varchar', length: 50 })
-  nickname: string;
+  code: string;
 
-  @Column({ type: 'varchar', length: 500 })
-  avatar: string;
+  @Column({ type: 'int' })
+  status: number;
 
-  @Column({ type: 'varchar', length: 10 })
-  status: string;
+  @Column({ type: 'varchar', length: 255 })
+  description: string;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'NOW()' })
   created_at: Date;
-
-  @UpdateDateColumn({ type: 'timestamp', default: () => 'NOW()' })
-  updated_at: Date;
 }
 
