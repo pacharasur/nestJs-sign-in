@@ -1,4 +1,4 @@
-import { ForbiddenException, Inject, Injectable, InternalServerErrorException, Logger, LoggerService } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, Logger, LoggerService, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload, Tokens } from './types';
@@ -34,7 +34,7 @@ export class AuthorizationService {
     try {
       const result = await this.usersRepository.getUserByUserName(username);
       if (!result) {
-        throw new ForbiddenException(ErrorMessage.USER_NOT_FOUND);
+        throw new UnauthorizedException(ErrorMessage.USER_NOT_FOUND);
       }
 
       await this.comparePassword(password, result.password);
@@ -50,7 +50,7 @@ export class AuthorizationService {
     const passMatches = await bcrypt.compare(password, hash);
     if (!passMatches) {
       this.logger.error(`The password of user is not match.`);
-      throw new ForbiddenException(ErrorMessage.INCORRECT_PASSWORD);
+      throw new UnauthorizedException(ErrorMessage.INCORRECT_PASSWORD);
     }
     return passMatches;
   }
