@@ -23,9 +23,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const exceptionMessage = this.transformMessageHandler(message);
     const decoded = decodeJwtHeaders(request.headers.authorization);
     const username = decoded ? decoded.username : 'unknown user';
-    const actualUsername = decoded ? decoded.username : request.body.username;
-
-    await this.activityLogsService.createActivityLog(username, actualUsername, request.method, request.url, code, status, exceptionMessage);
+    await this.activityLogsService.createActivityLog(username, request.method, request.url, status, exceptionMessage);
     if (decoded) {
       this.logger.error(
         `An error occured on user ${decoded.username} when call ${request.url} - ${exceptionMessage}`,

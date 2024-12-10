@@ -29,13 +29,11 @@ export function populateToUserEntity(user: UserDto, hashedPassword: string, imag
   }) as usersEntity;
 }
 
-export function populateToActivityEntity(username: string, actualUsername: string, method: string, url: string, code: string, status: number, description: string): activityLogsEntity {
+export function populateToActivityEntity(username: string, method: string, url: string, status: number, description: string): activityLogsEntity {
   return Object.assign({
     user_name: username,
-    actual_user_name: actualUsername,
     method: method,
     url: url,
-    code: code,
     status: status,
     description: description,
     created_at: new Date(),
@@ -47,7 +45,6 @@ export function populateToActivityResponse(activity: activityLogsEntity): IActiv
     username: activity.user_name,
     method: activity.method,
     url: activity.url,
-    code: activity.code,
     status: activity.status,
     description: activity.description,
     createdAt: new Date(),

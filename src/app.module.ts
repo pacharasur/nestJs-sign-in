@@ -12,6 +12,7 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { HttpExceptionFilter } from './common/exception/http-exception.filter';
 import { AppResponseInterceptor } from './common/interceptors/response.interceptor';
 import { ActivityLogsModule } from './activity-logs/activity-logs.module';
+import { logsInterceptor } from './common/interceptors/logs.interceptor';
 
 @Module({
   imports: [UsersModule, TypeOrmModule.forRoot(dataSourceOptions),
@@ -31,6 +32,10 @@ import { ActivityLogsModule } from './activity-logs/activity-logs.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: AppResponseInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: logsInterceptor,
     },
   ],
 })

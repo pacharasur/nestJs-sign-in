@@ -18,11 +18,13 @@ export class AppResponseInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest<Request>();
     console.log(
-      `\n[${request.method}] ${request.headers.host}${request.originalUrl}`,
+      `\n Incoming: [${request.method}] ${request.headers.host}${request.originalUrl}`,
     );
     return next.handle().pipe(
       map(async (data) => {
-        // await this.activityLogsService.createActivityLog(userId, method, url, 200, timestamp);
+        console.log(
+          `\n end: [${request.method}] ${request.headers.host}${request.originalUrl}`,
+        );
         const response: any = this.transformResponseHandler(data?.data || data);
         return response;
       }),

@@ -13,17 +13,11 @@ export class activityLogsEntity {
   @Column({ type: 'varchar', length: 50 })
   user_name: string;
 
-  @Column({ type: 'varchar', length: 50 })
-  actual_user_name: string;
-
   @Column({ type: 'varchar', length: 10 })
   method: string;
 
   @Column({ type: 'varchar', length: 255 })
   url: string;
-
-  @Column({ type: 'varchar', length: 50 })
-  code: string;
 
   @Column({ type: 'int' })
   status: number;

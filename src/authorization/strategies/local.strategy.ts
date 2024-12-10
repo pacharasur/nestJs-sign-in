@@ -5,6 +5,7 @@ import { AuthorizationService } from '../authorization.service';
 import { UserDetailDto, UserDto } from 'src/users/dto/user-data.dto';
 import { EncryptService } from 'src/encrypt/encrypt.service';
 import { validateOrReject } from 'class-validator';
+import { passwordRegex } from 'src/util/tools';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -17,6 +18,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   async validate(req: any, username: string): Promise<UserDetailDto> {
     const passwordDecrypt = this.encryptService.decryptData(req.body.password, req.body.iv, req.body.authTag);
     await this.validateFields(username, passwordDecrypt);
+    const validPass = passwordRegex(passwordDecrypt);
+    if (!validPass) {
+      throw new BadRequestException('password อย่างน้อย 8 ตัวอักษร มีตัวเลขอย่างน้อย 1 ตัว ตัวอักขระพิเศษอย่างน้อย 1 ตัว')
+    }
     const user = await this.authService.validateUser(username, passwordDecrypt);
     if (!user) {
       throw new UnauthorizedException();
