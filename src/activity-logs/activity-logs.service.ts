@@ -11,9 +11,9 @@ export class ActivityLogsService {
     private readonly activityLogsRepository: ActivityLogsRepository,
   ) { }
 
-  async createActivityLog(username: string, method: string, url: string, code: string, status: number, description: string): Promise<IActivityResponse> {
+  async createActivityLog(username: string, actualUsername: string, method: string, url: string, code: string, status: number, description: string): Promise<IActivityResponse> {
     try {
-      const actEntity = populateToActivityEntity(username, method, url, code, status, description);
+      const actEntity = populateToActivityEntity(username, actualUsername, method, url, code, status, description);
       const result = await this.activityLogsRepository.create(actEntity);
       return populateToActivityResponse(result);
     } catch (err) {

@@ -13,6 +13,9 @@ export class activityLogsEntity {
   @Column({ type: 'varchar', length: 50 })
   user_name: string;
 
+  @Column({ type: 'varchar', length: 50 })
+  actual_user_name: string;
+
   @Column({ type: 'varchar', length: 10 })
   method: string;
 
