@@ -1,9 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import * as bcrypt from 'bcryptjs';
 import { UserDetailDto, UserDto } from './dto/user-data.dto';
 import { ErrorMessage } from 'src/util/error-message';
-import { convertImageToBase64, encryptData, populateToUserEntity, populateToUserResponse } from 'src/util/tools';
+import { convertImageToBase64, encryptData, passwordRegex, populateToUserEntity, populateToUserResponse } from 'src/util/tools';
 import { IComparisonResponse, IUserResponse } from './interfaces/user.interface';
 import * as sharp from 'sharp';
 import * as pixelmatch from 'pixelmatch';
@@ -21,8 +21,10 @@ export class UsersService {
 
   async createUser(user: UserDto, image: Express.Multer.File): Promise<IUserResponse> {
     try {
-
-
+      const validPass = passwordRegex(user.password);
+      if (!validPass) {
+        throw new BadRequestException('password อย่างน้อย 8 ตัวอักษร มีตัวเลขอย่างน้อย 1 ตัว ตัวอักขระพิเศษอย่างน้อย 1 ตัว')
+      }
       const hashedPassword = await this.hashPassword(user.password);
       const imageBase64 = convertImageToBase64(image[0].buffer);
 

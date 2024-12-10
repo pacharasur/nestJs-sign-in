@@ -19,14 +19,12 @@ export class UsersController {
     return await this.usersService.createUser(user, image);
   }
 
-  @Public() //ลบด้วย
   @HttpCode(HttpStatus.OK)
   @Get(':id')
   async getUserById(@Param('id') id: number): Promise<IUserResponse> {
     return await this.usersService.getUserById(id);
   }
 
-  @Public() //ลบด้วย
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   async update(
@@ -36,7 +34,7 @@ export class UsersController {
     return await this.usersService.findOneAndUpdate(id, body);
   }
 
-  @Public() //ลบด้วย
+  @Public()
   @Post('encrypt')
   @HttpCode(HttpStatus.OK)
   async encrypt(
@@ -45,7 +43,7 @@ export class UsersController {
     return await this.usersService.encrypt(body.password);
   }
 
-  @Public() //ลบด้วย
+  @Public()
   @Post('decrypt')
   @HttpCode(HttpStatus.OK)
   async decrypt(
@@ -54,8 +52,6 @@ export class UsersController {
     return await this.usersService.decrypt(body.encryptedData, body.iv, body.authTag);
   }
 
-
-  @Public() //ลบด้วย
   @Post('compare-images')
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(FilesInterceptor('images', 2))
@@ -67,9 +63,9 @@ export class UsersController {
     );
   }
 
-  @Public() //ลบด้วย
+  @HttpCode(HttpStatus.OK)
   @Delete(':id')
-  deleteUserById(@Param('id') id: number) {
-    return this.usersService.deleteUserById(id);
+  async deleteUserById(@Param('id') id: number) {
+    return await this.usersService.deleteUserById(id);
   }
 }
