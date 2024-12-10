@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import dataSource from 'src/database/typeorm.config';
 import { usersEntity } from './entities/users.entity';
 import { UserDetailDto, UserDto } from './dto/user-data.dto';
 
