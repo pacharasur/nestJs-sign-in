@@ -22,7 +22,6 @@ export class logsInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap(async () => {
         const res = context.switchToHttp().getResponse<Response>();
-        console.log(username);
         await this.activityLogsService.createActivityLog(username, request.method, request.originalUrl, res.statusCode, 'Success');
         return next.handle();
       }),

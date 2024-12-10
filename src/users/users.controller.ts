@@ -11,7 +11,7 @@ import { IEncrypt } from './interfaces/encrypt.interface';
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
-  @Public() //ลบด้วย
+  @Public()
   @HttpCode(HttpStatus.CREATED)
   @Post('register')
   @UseInterceptors(FilesInterceptor('image', 1))
