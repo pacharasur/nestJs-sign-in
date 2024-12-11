@@ -55,7 +55,7 @@ export class UsersService {
     }
   }
 
-  async findOneAndUpdate(id: number, dataUpdate: UserDetailDto):  Promise<IUserResponse> {
+  async findOneAndUpdate(id: number, dataUpdate: UserDetailDto): Promise<IUserResponse> {
     try {
       const user = await this.usersRepository.getUserById(id);
       if (!user) throw new NotFoundException(ErrorMessage.USER_NOT_FOUND);
@@ -74,6 +74,9 @@ export class UsersService {
 
   async compareImages(images: Express.Multer.File[]): Promise<IComparisonResponse> {
     try {
+      if (images.length !== 2) {
+        throw new BadRequestException('ต้องการสองรูปภาพเพื่อใช้ในการเปรียบเทียบ');
+      }
       const [image1, image2] = images;
       const imageBuffer1 = await sharp(image1.buffer).resize(800, 600).raw().toBuffer();
       const imageBuffer2 = await sharp(image2.buffer).resize(800, 600).raw().toBuffer();
