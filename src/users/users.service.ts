@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import * as bcrypt from 'bcryptjs';
 import { UserDetailDto, UserDto } from './dto/user-data.dto';
@@ -26,6 +26,10 @@ export class UsersService {
         throw new BadRequestException('password อย่างน้อย 8 ตัวอักษร มีตัวเลขอย่างน้อย 1 ตัว ตัวอักขระพิเศษอย่างน้อย 1 ตัว')
       }
       const hashedPassword = await this.hashPassword(user.password);
+
+      const matchUser = await this.usersRepository.getUserByUserName(user.username);
+      if (matchUser) throw new ConflictException(ErrorMessage.USER_EXISTS);
+
       const imageBase64 = convertImageToBase64(image[0].buffer);
 
       const userEntity = populateToUserEntity(user, hashedPassword, imageBase64);
